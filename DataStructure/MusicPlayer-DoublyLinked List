@@ -1,0 +1,366 @@
+#include <iostream>
+using namespace std;
+
+//==================== Structure ====================//
+
+struct Song
+{
+    int id;
+    string title;
+    string artist;
+    float duration;
+    Song *prev;
+    Song *next;
+};
+
+//==================== Global Pointers ====================//
+Song *head = NULL;
+Song *tail = NULL;
+Song *current = NULL;
+
+//==================== Function Prototypes ====================//
+
+Song* createSong();
+
+void addSong();
+
+void displayPlaylist();
+
+void displayReversePlaylist();
+
+void searchSong();
+
+void deleteSong();
+
+void playNext();
+
+void playPrevious();
+
+void showCurrentSong();
+
+void reversePlaylist();
+
+//==================== Main Function ====================//
+
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n========== MUSIC PLAYER ==========\n";
+        cout << "1. Add Song\n";
+        cout << "2. Display Playlist\n";
+        cout << "3. Display Reverse Playlist\n";
+        cout << "4. Search Song\n";
+        cout << "5. Delete Song\n";
+        cout << "6. Play Next\n";
+        cout << "7. Play Previous\n";
+        cout << "8. Show Current Song\n";
+        cout << "9. Reverse Playlist\n";
+        cout << "10. Exit\n";
+
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch(choice)
+        {
+            case 1:
+                addSong();
+                break;
+
+            case 2:
+                displayPlaylist();
+                break;
+
+            case 3:
+                displayReversePlaylist();
+                break;
+
+            case 4:
+                searchSong();
+                break;
+
+            case 5:
+                deleteSong();
+                break;
+
+            case 6:
+                playNext();
+                break;
+
+            case 7:
+                playPrevious();
+                break;
+
+            case 8:
+                showCurrentSong();
+                break;
+
+            case 9:
+                reversePlaylist();
+                break;
+
+            case 10:
+                cout << "Thank You!\n";
+                break;
+
+            default:
+                cout << "Invalid Choice!\n";
+        }
+
+    } while(choice != 10);
+
+    return 0;
+}
+
+//==================== Function Definitions ====================//
+
+Song* createSong(int id, string title, string artist, float duration)
+{
+    Song *newSong = new Song;
+    newSong->id=id;
+    newSong->title = title;
+    newSong->artist = artist;
+    newSong->duration = duration;
+    newSong->prev = NULL;
+    newSong->next=NULL;
+    return newSong;
+
+}
+bool isIDExsists(int id)
+{
+    Song *temp = head;
+    while(temp != NULL)
+    {
+        if(temp->id == id)
+        {
+            return true;
+        }
+        temp = temp->next;
+    }
+    return false;
+}
+void addSong()
+{   int id;
+    string title;
+    string artist;
+    float duration;
+    cout << "Enter Song ID: ";
+    cin>>id;
+    if(isIDExsists(id))
+    {
+        cout<<"Song With the Same Id Already Exsists"<<endl;
+        return;
+    }
+    cin.ignore();
+    cout << "Enter Song Title: ";
+    getline(cin,title);
+    cout << "Enter Song Artist: ";
+    getline(cin,artist);
+    cout << "Enter Song Duration: ";
+    cin>>duration;
+    Song *newSong = createSong(id,title,artist,duration);
+    if(head == NULL){
+        head = tail = newSong;
+        current = newSong;
+        return;
+    }
+    Song *temp = head;
+    while(temp->next != NULL){
+        temp = temp->next;
+    }
+    temp->next = newSong;
+    newSong->prev = temp;
+    tail = newSong;
+}
+
+void displayPlaylist()
+{   
+    Song *temp = head;
+    if(temp == NULL){
+        cout<<"Playlist is Empty"<<endl;
+        return;        
+    }
+    while(temp != NULL){
+        cout<<"ID: "<<temp->id<<endl;
+        cout<<"Title: "<<temp->title<<endl;
+        cout<<"Artist: "<<temp->artist<<endl;
+        cout<<"Duration: "<<temp->duration<<endl;
+        cout<<"------------------------"<<endl;
+        temp = temp->next;
+    }
+}
+
+void displayReversePlaylist()
+{
+    Song *temp = tail;
+    if( temp == NULL){
+        cout<<"Playlist is Empty"<<endl;
+        return;        
+    }
+    while(temp != NULL){
+        cout<<"ID: "<<temp->id<<endl;
+        cout<<"Title: "<<temp->title<<endl;
+        cout<<"Artist: "<<temp->artist<<endl;
+        cout<<"Duration: "<<temp->duration<<endl;
+        cout<<"------------------------"<<endl;
+        temp = temp->prev;
+    }
+}
+
+void searchSong()
+{
+    cout<<"Enter Song ID to Search: ";
+    int id;
+    cin>>id;
+    if(isIDExsists(id)){
+        Song *temp = head;
+        while(temp != NULL){
+            if(temp->id == id){
+                cout<<"ID: "<<temp->id<<endl;   
+                cout<<"Title: "<<temp->title<<endl;
+                cout<<"Artist: "<<temp->artist<<endl;
+                cout<<"Duration: "<<temp->duration<<endl;
+                return;
+            }
+            temp = temp->next;
+        }
+    }
+    else{
+        cout<<"Song Not Found"<<endl;
+    }
+}
+
+void deleteSong()
+{
+    cout << "Enter Song ID to Delete: ";
+    int id;
+    cin >> id;
+
+    if (!isIDExsists(id))
+    {
+        cout << "Song Not Found" << endl;
+        return;
+    }
+
+    Song *temp = head;
+
+    while (temp != NULL)
+    {
+        if (temp->id == id)
+        {
+            if (head == tail)
+            {
+                delete temp;
+                head = NULL;
+                tail = NULL;
+                current = NULL;
+                return;
+            }
+            else if (temp == head)
+            {
+                head = head->next;
+                head->prev = NULL;
+                delete temp;
+                current = head;
+                return;
+            }
+            else if (temp == tail)
+            {
+                tail = tail->prev;
+                tail->next = NULL;
+                delete temp;
+                current = tail;
+                return;
+            }
+            else
+            {
+                temp->prev->next = temp->next;
+                temp->next->prev = temp->prev;
+                if (current == temp)
+                    current = temp->next;
+
+                delete temp;
+                return;
+            }
+        }
+        temp = temp->next;
+    }
+}
+
+void playNext()
+{
+    if (current == NULL)
+    {
+        cout << "No song is currently playing!" << endl;
+        return;
+    }
+    if (current->next == NULL)
+    {
+        cout << "This is the last song!" << endl;
+        return;
+    }
+    current = current->next;
+    cout << "\nNow Playing\n";
+    cout << "ID : " << current->id << endl;
+    cout << "Title : " << current->title << endl;
+    cout << "Artist : " << current->artist << endl;
+    cout << "Duration : " << current->duration << " mins" << endl;
+}
+void playPrevious()
+{
+    if (current == NULL)
+    {
+        cout << "No song is currently playing!" << endl;
+        return;
+    }
+    if (current->prev == NULL)
+    {
+        cout << "This is the first song!" << endl;
+        return;
+    }
+    current = current->prev;
+    cout << "\nNow Playing\n";
+    cout << "ID : " << current->id << endl;
+    cout << "Title : " << current->title << endl;
+    cout << "Artist : " << current->artist << endl;
+    cout << "Duration : " << current->duration << " mins" << endl;
+}
+
+void showCurrentSong()
+{
+    if (current == NULL)
+    {
+        cout << "No song is currently playing!" << endl;
+        return;
+    }
+
+    cout << "\nCurrent Song\n";
+    cout << "ID : " << current->id << endl;
+    cout << "Title : " << current->title << endl;
+    cout << "Artist : " << current->artist << endl;
+    cout << "Duration : " << current->duration << " mins" << endl;
+}
+void reversePlaylist()
+{
+    if (head == NULL)
+    {
+        cout << "Playlist is Empty!" << endl;
+        return;
+    }
+    Song *temp = head;
+    Song *swap = NULL;
+    while (temp != NULL)
+    {
+        swap = temp->prev;
+        temp->prev = temp->next;
+        temp->next = swap;
+        temp = temp->prev;
+    }
+    swap = head;
+    head = tail;
+    tail = swap;
+
+    cout << "Playlist Reversed Successfully!" << endl;
+}
