@@ -1,0 +1,156 @@
+#include<iostream>
+#include<string>
+using namespace std;
+struct Node
+{
+    string data;
+    Node *next;
+};
+struct History
+{
+    string data;
+    History *next;
+};
+Node* head = NULL;
+History* top = NULL;
+Node* createNode(string value)
+{
+    Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+History* createHistory(string value)
+{
+    History *newNode = (struct History*)malloc(sizeof(struct History));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+void insertBeginning(string value)
+{
+    Node *newNode = createNode(value);
+    History *node = createHistory(value);
+    if(head == NULL)
+    {
+        head = newNode;
+        top = node;
+        return;
+    }
+    newNode->next = head;
+    head = newNode;
+    node->next = top;
+    top = node;
+
+}
+void deleteBeginning()
+{
+    if(head == NULL)
+    {
+        cout<<"Search History is Empty"<<endl;
+        return;
+    }
+    head = head->next;
+}
+void history()
+{
+      if(top == NULL)
+      {
+          cout<<"Search History is Empty"<<endl;
+          return;
+      }
+      History *temp = top;
+      cout<<"----------Search History-------------"<<endl;
+      while(temp != NULL)
+      {
+            cout<<" "<<temp->data<<"\n";
+            temp = temp->next;
+      }
+      cout<<"-------------------------------------"<<endl;
+}
+void searchHistory()
+{
+    string id;
+    int flag = 0;
+    cout<<"Enter the web to search ";
+    cin>>id;
+    if(top == NULL)
+    {
+        cout<<"Search History is Empty"<<endl;
+        return;
+    }
+    History *temp = top;
+    while(temp != NULL)
+    {
+        if(id == top->data)
+        {
+            cout<<"Search History Found"<<endl;
+            flag = 1;
+            return;
+        }
+        temp = temp->next;
+    }
+    if(flag == 0)
+    {
+        cout<<"Search History Not Found"<<endl;
+    }
+}
+void deleteHistory()
+{
+      if(top == NULL)
+      {
+          cout<<"Search History is Empty"<<endl;
+          return;
+      }
+      top = top->next;
+}
+void display()
+{
+    if(head == NULL)
+    {
+        cout<<"Search History is Empty "<<endl;
+        return;
+    }
+    cout<<head->data<<endl;
+}
+int main()
+{
+    int choice;
+    string text;
+    do
+    {
+        cout<<"1.Visit Page \n2.Back\n3.Current Page\n4.Display Search History\n5.Delete History\n6.Search\n0.Exit \n";
+        cout<<"Enter your Choice : ";
+        cin>>choice;
+        switch(choice)
+        {
+            case 1:
+                  cout<<"Enter the webpage name : ";
+                  cin>>text;
+                  insertBeginning(text);
+                  break;
+            case 2:
+                  deleteBeginning();
+                  cout<<"You are in  the page : ";
+                  display();
+                  break;
+            case 3:
+                  cout<<"Your Current Page : ";
+                  display();
+                  break;
+            case 4:
+                  history();
+                  break;
+            case 5:
+                  deleteHistory();
+                  break;
+            case 6:
+                  searchHistory();
+                  break;
+            case 0:
+                  cout<<"Program Terminated\n";
+                  break;
+        }
+    }while(choice !=0);
+    return 0;
+}
