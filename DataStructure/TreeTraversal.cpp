@@ -62,7 +62,7 @@ int main()
     cout << "\nInOrder Traversal ...." << endl;
     InOrder(root);
 
-    cout << "\nPreOrder Traversal ...." << endl;
+    cout << "\nPostOrder Traversal ...." << endl;
     PostOrder(root);
 
     return 0;
