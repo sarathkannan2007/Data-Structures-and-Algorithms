@@ -43,7 +43,7 @@ class HASH
             int search_key = hashFunction(search_value);
             for (int i = 0; i < table_size; i++)
             {
-                int current = (search_value+1)%10;
+                int current = (search_key + 1)%table_size;
                 if(table[current] == search_value)
                 {
                     cout << "Found : " << table[current] << endl;
